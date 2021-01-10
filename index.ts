@@ -3,19 +3,28 @@ interface IPromise {
 }
 
 const createPromiseThatFulfillsInATimeout = (timeoutSeconds: number) => (
-    new Promise<void>((resolve, reject) => {
+    new Promise<number>((resolve, reject) => {
         setTimeout(() => {
-            resolve()
+            resolve(timeoutSeconds)
         }, timeoutSeconds * 1000)
     })
 )
 
 const myPromise = createPromiseThatFulfillsInATimeout(1);
 
-const myPromise2 = myPromise.then(() => {
-    console.log("should be called in a second")
+const myPromise2 = myPromise.then((timeoutSeconds: number) => {
+    console.log(`previous promise was fulfilled in ${timeoutSeconds} seconds`)
     return createPromiseThatFulfillsInATimeout(2)
 })
+
+setTimeout(() => {
+    myPromise.then((timeoutSeconds: number) => {
+        console.log(`previous promise was fulfilled in ${timeoutSeconds} seconds`)
+    })
+    myPromise.then((timeoutSeconds: number) => {
+        console.log(`previous promise was fulfilled in ${timeoutSeconds} seconds`)
+    })
+}, 10000);
 
 const myPromise3 = myPromise2.then(() => {
     console.log("should be called right after that")
