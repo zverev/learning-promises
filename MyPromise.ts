@@ -3,6 +3,7 @@ export default class MyPromise {
 
     constructor(asyncFactory: (resolve: () => void, reject?: () => void) => void) {
         asyncFactory(this.resolve.bind(this), this.reject.bind(this))
+
     }
 
     resolve(){
@@ -17,7 +18,14 @@ export default class MyPromise {
         return this.state
     }
 
-    then(onSuccess: () => void) {
+    then(onSuccess: () => void, onReject?: () => void) {
+       if(this.state === "RESOLVED") {
+           onSuccess()
+       } else if (this.state === "REJECTED") {
+           onReject()
+       } else {
+           console.log("pending")
+       }
         return "ok"
     }
 }
