@@ -43,4 +43,18 @@ describe("MyPromise", () => {
         })
         expect(spy).toBeCalledTimes(1);
     })
+
+    test("should call onSuccess callback after async operation is completed successfully", (done) => {
+        const spy = jest.fn();
+        const myPromise = new MyPromise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 1000)
+        })
+        myPromise.then(() => {
+            spy();
+            expect(spy).toBeCalledTimes(1);
+            done()
+        })
+    })
 })

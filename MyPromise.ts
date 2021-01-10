@@ -1,28 +1,37 @@
 export default class MyPromise {
     private state = ""
+    private onSuccess: () => void
+    private onReject: () => void
 
     constructor(asyncFactory: (resolve: () => void, reject?: () => void) => void) {
         asyncFactory(this.resolve.bind(this), this.reject.bind(this))
 
     }
 
-    resolve(){
+    private resolve(){
         this.state = "RESOLVED"
+        this.onSuccess()
     }
 
-    reject(){
+    private reject(){
         this.state = "REJECTED"
+        this.onReject()
     }
 
+    /*
+     * @deprecated
+     */
     getState(){
         return this.state
     }
 
-    then(onSuccess: () => void, onReject?: () => void) {
+    public then(onSuccess: () => void, onReject: () => void = () => null) {
+        this.onSuccess = onSuccess
+        this.onReject = onReject
        if(this.state === "RESOLVED") {
-           onSuccess()
+           this.onSuccess()
        } else if (this.state === "REJECTED") {
-           onReject()
+           this.onReject()
        } else {
            console.log("pending")
        }
