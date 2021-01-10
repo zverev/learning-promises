@@ -1,3 +1,5 @@
+import axios from "axios";
+
 interface IPromise {
     then: (onSuccess: () => void, onFailure?: () => void) => IPromise;
     catch: (onFailure: () => void) => IPromise;
@@ -11,17 +13,18 @@ const createPromiseThatFulfillsInATimeout = (timeoutSeconds: number) => (
     })
 )
 
-const myPromise = createPromiseThatFulfillsInATimeout(1);
+async function run() {
+    try {
+        const myPromise = createPromiseThatFulfillsInATimeout(1);
+        const { data } = await axios('https://jsonplaceholder.typicode.com/todos/1')
+        const myPromiseTimeoutSeconds = await myPromise;
+        console.log(`previous promise was fulfilled in ${myPromiseTimeoutSeconds} seconds`)
+        const myPromise2 = createPromiseThatFulfillsInATimeout(2);
+        const myPromise2TimeoutSeconds = await myPromise2
+    } catch(err) {
+        console.error("An error occured, here we'll handle it")
+        console.error(err.message)
+    }
+}
 
-const myPromise2 = myPromise.then((timeoutSeconds: number) => {
-    console.log(`previous promise was fulfilled in ${timeoutSeconds} seconds`)
-    throw new Error("404")
-    return createPromiseThatFulfillsInATimeout(2)
-})
-
-const myPromise3 = myPromise2.then(() => {
-    console.log("should be called right after that")
-}).catch((err) => {
-    console.error("An error occured, here we'll handle it")
-    console.error(err.message)
-})
+run()
